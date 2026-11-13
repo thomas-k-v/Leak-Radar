@@ -51,3 +51,31 @@ Each entry says what was decided and why. Spec items marked LOCKED are only devi
 - Match keys: D1 `(merchant, method, bank)`; D2/D3 `(merchant)`.
 - **Dev vs test seeds:** thresholds were tuned while looking at seeds 42 and 1–5. Reported held-out
   numbers use seeds 101–110, which were not looked at during tuning.
+
+## Agent, API and guard
+- **Default model `claude-sonnet-5-5`** (approved in the plan, for cost), overridable with `LLM_MODEL`;
+  `LLM_EFFORT` defaults to `medium`. Server-side refusal fallback (`fallbacks: "default"`) is on by default,
+  `LLM_FALLBACKS=off` disables it.
+- **No token-level text streaming.** The guard must see a whole text block before it is shown, so each
+  block is released after checking. Status and component events still stream live. The provider uses
+  `messages.stream()` + `get_final_message()` for timeout safety.
+- Tools are not `strict: true`: `render_component.props` is a free-form object, which strict mode can't
+  express. Inputs are validated server-side instead (Pydantic + DB existence + metric/detector fit).
+- **Guard allow-list** = numbers in this turn's tool outputs (numeric leaves *and* figures written in their
+  string fields), plus figures in the AM's own message. On violation: one regeneration with a note naming
+  the offending figures; if it fails again, those figures are redacted. Violations go to `logs/guard.jsonl`.
+- **Pitch drafting** happens in one LLM: `draft_pitch` takes an optional `message_template` with
+  `{placeholders}`, the guard rejects any raw figure in it, and code fills the values. Without a template a
+  built-in one is used (the mock always does this).
+- `get_leak_detail` returns summary stats, not daily trend series. The series go only to the UI over REST,
+  which keeps the guard's allow-list small (challenge #6 in the plan).
+- `list_top_leaks` gains `recommendation` / `product` / `merchant_id` filters (needed for demo step 5) and
+  returns a precomputed total, so the model never has to add figures up.
+- Conversations live in memory (single-user local demo). The mock LLM is a deterministic intent router that
+  writes prose only from tool outputs. `MOCK_LLM_BAD_NUMBERS=once|always` exercises the guard.
+
+## Web
+- Charts use the validated categorical palette (slots 1–4: bank, merchant, network, gateway). Customer-caused
+  failures are neutral grey because they are not a leak. Light-mode aqua and yellow are under 3:1 contrast
+  on the surface, so the root-cause legend shows every share as a visible label.
+- Trend for D3 is daily over days with ≥ 3 renewals (debits cluster on cycle days).

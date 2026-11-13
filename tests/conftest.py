@@ -11,7 +11,8 @@ def demo_data(tmp_path_factory):
     os.environ["LEAKRADAR_DATA_DIR"] = str(out)
     os.environ["LEAKRADAR_DB"] = str(out / "leakradar.db")
     os.environ["LEAKRADAR_GUARD_LOG"] = str(out / "guard.jsonl")
-    os.environ["LLM_PROVIDER"] = "mock"
+    if os.environ.get("LEAKRADAR_LIVE") != "1":      # never hit the real API unless asked
+        os.environ["LLM_PROVIDER"] = "mock"
 
     from leakradar.common import config
     from leakradar.common.db import connect

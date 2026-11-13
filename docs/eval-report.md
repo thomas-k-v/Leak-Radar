@@ -16,7 +16,7 @@ Targets: precision ≥ 0.85, recall ≥ 0.85, median ₹ error ≤ 20% — per d
 Overall: **30/30 planted leaks found, 0 false positives** (0 on decoy merchants). Median ₹ error 7.8%. Recommendation (cross-sell vs config review) correct on 100.0% of matches.
 
 
-## Held-out seeds 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 (thresholds were tuned on seed 42 only)
+## Held-out seeds 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 — untouched test seeds (thresholds were tuned while looking at seeds 42 and 1–5)
 
 | Detector | Precision mean (min) | Recall mean (min) | Median ₹ error mean (max) | Total FP | Total FN |
 |---|---|---|---|---|---|

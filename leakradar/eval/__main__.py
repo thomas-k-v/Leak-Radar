@@ -78,7 +78,7 @@ def render_report(main: dict, holdout: dict | None, seed: int, holdout_seeds: li
         if v["missed"] or v["false_positives"]:
             L.append(f"- {DETECTOR_LABEL[det]}: missed {v['missed'] or 'none'}; false positives {v['false_positives'] or 'none'}")
     if holdout:
-        L += ["", f"## Held-out seeds {', '.join(map(str, holdout_seeds))} (thresholds were tuned on seed {seed} only)", "",
+        L += ["", f"## Held-out seeds {', '.join(map(str, holdout_seeds))} — untouched test seeds (thresholds were tuned while looking at seeds {seed} and 1–5)", "",
               "| Detector | Precision mean (min) | Recall mean (min) | Median ₹ error mean (max) | Total FP | Total FN |",
               "|---|---|---|---|---|---|"]
         for det in DETECTORS:
