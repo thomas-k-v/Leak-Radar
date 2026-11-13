@@ -1,0 +1,34 @@
+[project]
+name = "leakradar"
+version = "0.1.0"
+description = "AI cross-sell copilot for payment-gateway account managers (synthetic-data portfolio project)"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pandas>=2.2",
+  "numpy>=1.26",
+  "scipy>=1.13",
+  "pydantic>=2.7",
+  "pyyaml>=6",
+  "anthropic>=0.40",
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["leakradar*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "live: hits the real Anthropic API (skipped unless LLM_PROVIDER=anthropic and ANTHROPIC_API_KEY set)",
+  "slow: runs the full generator",
+]
+addopts = "-m 'not live'"

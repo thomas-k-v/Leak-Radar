@@ -1,0 +1,34 @@
+# SYNTHETIC error taxonomy for Leak Radar demo data.
+# These are NOT real NPCI, card-network or gateway error codes.
+#
+# cause:
+#   system   -> counts toward leak detection (bank / network / gateway / integration problems)
+#   customer -> customer-caused, never counted as a leak
+codes:
+  BANK_TIMEOUT:             {layer: bank,     cause: system}
+  BANK_DOWN:                {layer: bank,     cause: system}
+  NETWORK_DROP:             {layer: network,  cause: system}
+  OTP_TIMEOUT:              {layer: network,  cause: system}
+  SESSION_EXPIRED:          {layer: bank,     cause: system}
+  COLLECT_EXPIRED:          {layer: merchant, cause: system}   # integration choice: collect instead of intent
+  MANDATE_PRENOTIFY_FAILED: {layer: bank,     cause: system}
+  MANDATE_NOT_ACTIVE:       {layer: bank,     cause: system}
+  GATEWAY_ERROR:            {layer: gateway,  cause: system}
+  INSUFFICIENT_FUNDS:       {layer: customer, cause: customer}
+  USER_CANCELLED:           {layer: customer, cause: customer}
+
+# Baseline distribution of *system* failure codes per method (non-recurring payments).
+system_code_mix:
+  upi_intent:  {BANK_TIMEOUT: 0.40, BANK_DOWN: 0.15, NETWORK_DROP: 0.30, GATEWAY_ERROR: 0.15}
+  upi_collect: {COLLECT_EXPIRED: 0.70, BANK_TIMEOUT: 0.15, NETWORK_DROP: 0.10, GATEWAY_ERROR: 0.05}
+  card:        {OTP_TIMEOUT: 0.35, SESSION_EXPIRED: 0.20, BANK_TIMEOUT: 0.20, NETWORK_DROP: 0.15, GATEWAY_ERROR: 0.10}
+  netbanking:  {BANK_TIMEOUT: 0.40, BANK_DOWN: 0.20, SESSION_EXPIRED: 0.25, GATEWAY_ERROR: 0.15}
+  intl_card:   {OTP_TIMEOUT: 0.40, SESSION_EXPIRED: 0.25, NETWORK_DROP: 0.20, GATEWAY_ERROR: 0.15}
+
+# Recurring (mandate) debits.
+recurring_system_code_mix: {MANDATE_PRENOTIFY_FAILED: 0.40, MANDATE_NOT_ACTIVE: 0.20, BANK_TIMEOUT: 0.40}
+
+# Codes used for the extra failures injected by planted D1 spikes (bank-side outage pattern).
+spike_code_mix: {BANK_TIMEOUT: 0.55, BANK_DOWN: 0.35, NETWORK_DROP: 0.10}
+
+customer_code_mix: {INSUFFICIENT_FUNDS: 0.6, USER_CANCELLED: 0.4}

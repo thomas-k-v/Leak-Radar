@@ -1,0 +1,109 @@
+# Synthetic data generator settings. All data is fictional.
+start_date: "2026-08-03"        # 90 days → 2026-08-03 .. 2026-10-31 (IST)
+sale_days: ["2026-08-15", "2026-09-05", "2026-10-02", "2026-10-20"]
+sale_traffic_mult: [3.0, 5.0]   # uniform range per sale day
+sale_fail_degrade_pts: 2.0      # mild platform-wide extra system failure on sale days
+
+# Baseline success rates by method (all causes included).
+baseline_sr:
+  upi_intent: 0.95
+  upi_collect: 0.80
+  card: 0.88
+  netbanking: 0.91
+  intl_card: 0.75
+# Of the baseline failure probability, how much is customer-caused (not a leak).
+customer_fail_prob:
+  upi_intent: 0.020
+  upi_collect: 0.030
+  card: 0.045
+  netbanking: 0.030
+  intl_card: 0.060
+merchant_sr_noise_pts: 1.0      # per-merchant, per-method jitter of system failure (sd, pts)
+
+banks: [BANK_A, BANK_B, BANK_C, BANK_D, BANK_E, BANK_F, BANK_G, BANK_H]
+bank_weights: [0.22, 0.18, 0.15, 0.12, 0.11, 0.09, 0.07, 0.06]
+bank_dirichlet_conc: 60
+
+hour_profile: [0.15, 0.08, 0.05, 0.04, 0.05, 0.12, 0.30, 0.55, 0.80, 0.95, 1.00, 1.05,
+               1.10, 1.05, 0.95, 0.90, 0.90, 0.95, 1.05, 1.20, 1.30, 1.25, 0.90, 0.45]
+weekday_mult: [0.95, 0.95, 1.00, 1.00, 1.05, 1.10, 1.00]   # Mon..Sun
+day_noise_sd: 0.12
+
+# Rows (non-recurring first attempts) per merchant over the window: lognormal.
+volume: {median: 1800, sigma: 0.8, min: 500, max: 30000}
+d1_plant_min_rows: 20000
+d2_plant_min_rows: 3500
+
+categories:
+  d2c_fashion: {weight: 0.22, ticket: 1300, upi_share: 0.50, intl_share: 0.01, mobile_share: 0.80}
+  electronics: {weight: 0.14, ticket: 6500, upi_share: 0.35, intl_share: 0.00, mobile_share: 0.65}
+  saas:        {weight: 0.13, ticket: 2500, upi_share: 0.30, intl_share: 0.08, mobile_share: 0.35}
+  edtech:      {weight: 0.13, ticket: 3800, upi_share: 0.45, intl_share: 0.03, mobile_share: 0.70}
+  food:        {weight: 0.18, ticket: 450,  upi_share: 0.65, intl_share: 0.00, mobile_share: 0.90}
+  travel:      {weight: 0.10, ticket: 8500, upi_share: 0.30, intl_share: 0.06, mobile_share: 0.60}
+  services:    {weight: 0.10, ticket: 1600, upi_share: 0.50, intl_share: 0.00, mobile_share: 0.70}
+ticket_sigma: 0.6
+card_share_of_rest: 0.62           # of non-UPI, non-intl: card vs netbanking
+collect_share_of_upi: [0.04, 0.10] # baseline uniform range
+collect_mobile_share: 0.35         # baseline: collect is mostly a desktop fallback
+city_tier_weights: {tier1: 0.5, tier2: 0.35, tier3: 0.15}
+
+retries:
+  retry_prob_after_system_fail: 0.35
+  same_method_prob: 0.8
+  delay_minutes: [1, 15]
+
+subscriptions:
+  categories: {saas: 0.85, edtech: 0.60, services: 0.15, food: 0.10}
+  n_subs: {median: 260, sigma: 0.7, min: 40, max: 1500}
+  d3_plant_min_subs: 300
+  plan_amounts:
+    saas: [999, 1999, 4999]
+    edtech: [1499, 2499, 3999]
+    services: [499, 999]
+    food: [299, 599]
+  method_mix: {card: 0.5, upi_intent: 0.35, netbanking: 0.15}
+  system_fail_prob: 0.05
+  system_fail_noise_pts: 0.8
+  insf_prone_share: 0.12          # customers who often lack funds
+  insf_prone_fail_prob: 0.30
+  normal_customer_fail_prob: 0.015
+
+plants:
+  d1:
+    count: 10
+    excess_pts: [10, 25]
+    methods: [card, upi_intent, netbanking]
+    sale_day_methods: [card, upi_intent]
+    window_kinds: {hours: 0.6, sale_days: 0.4}
+    window_len_h: [4, 6]
+    already_has_product: 3          # planted merchants that already have optimizer
+  d2:
+    count: 10
+    collect_share: [0.30, 0.60]
+    mobile_share: 0.85
+    already_has_product: 2
+  d3:
+    count: 10
+    excess_pts: [8, 15]
+    already_has_product: 2
+  overlap_merchants: 3              # merchants that receive two plants
+  decoys:
+    low_volume_noisy: 6             # ~600 rows, large day-level noise, no persistent pattern
+    random_bad_days: 4              # mid volume, 3 isolated bad days on one bank/method
+    high_insufficient_funds: 3      # subscription merchants with many INSUFFICIENT_FUNDS
+  extra_optimizer_merchants: 8      # non-planted merchants that already use optimizer
+
+am_owners: [Asha Nair, Rohan Mehta, Kavya Iyer, Dev Malhotra]
+name_parts:
+  prefix: [Blue, Lotus, Saffron, Coral, Indigo, Monsoon, Peacock, Banyan, Cedar, Marigold, Teal,
+           Amber, Copper, Neem, Orchid, Pebble, Quartz, River, Summit, Tulsi, Velvet, Willow,
+           Zephyr, Juniper, Kestrel, Lumen, Maple, Nimbus, Opal, Prism]
+  suffix:
+    d2c_fashion: [Threads, Loom, Weaves, Couture, Drapes]
+    electronics: [Gadgets, Circuits, Devices, Electro, Tech Mart]
+    saas: [Cloud, Labs, Stack, Systems, Software]
+    edtech: [Academy, Learning, Tutors, Classes, Prep]
+    food: [Kitchen, Bites, Tiffins, Cafe, Foods]
+    travel: [Journeys, Trips, Holidays, Voyages, Getaways]
+    services: [Services, Solutions, Care, Pros, Works]

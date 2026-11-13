@@ -1,0 +1,36 @@
+# Every detection threshold and ₹ sizing assumption lives here.
+# Each leak stores the exact values it used (leaks.assumptions_used), so changing a value here
+# and re-running detectors is fully traceable.
+
+common:
+  month_days: 30            # ₹/month = observed ₹ × (month_days / days_observed)
+  fdr_q: 0.01               # Benjamini–Hochberg false discovery rate across all tests of a detector
+  customer_codes: [INSUFFICIENT_FUNDS, USER_CANCELLED]   # customer-caused: never counted as a leak
+  severity_inr:             # severity from recoverable ₹/month
+    high: 100000
+    medium: 25000
+
+d1_bank_spike:
+  min_attempts: 120         # first attempts in the (merchant, method, bank, window) cell
+  min_baseline_attempts: 300
+  min_excess_pts: 8         # percentage points above the merchant's own other-bank baseline
+  max_p_value: 0.01         # raw two-proportion z-test p, before BH
+  window_lengths_h: [4, 6, 8]      # sliding hour-of-day windows, even start hours (2 h too noisy at SMB volume)
+  sale_day_traffic_ratio: 2.5       # a day is a sale day if platform volume >= ratio × median day
+  routing_recovery_rate: 0.5        # share of excess failures smart routing is assumed to recover
+  # already_recovered_by_retry_share is measured from the data (orders that later succeeded)
+
+d2_upi_collect:
+  min_upi_attempts: 300
+  min_collect_share: 0.25
+  min_sr_gap: 0.08
+  min_intent_attempts_for_own_rate: 200   # else fall back to platform median intent SR
+  switchable_share: 0.8                   # share of mobile collect traffic that can move to intent
+
+d3_subscription_churn:
+  min_failed_renewals: 30
+  min_excess_pts: 5
+  min_debits_for_baseline: 150            # merchants contributing to the platform median baseline
+  churn_given_failure: 0.35
+  retry_recovery_rate: 0.4
+  system_codes: [MANDATE_PRENOTIFY_FAILED, MANDATE_NOT_ACTIVE, BANK_TIMEOUT]

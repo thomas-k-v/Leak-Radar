@@ -1,0 +1,34 @@
+# Product catalogue used by the recommender.
+# TODO: Verify current product names and features on Razorpay's public site before demo.
+# Product names are used only to illustrate fit. This project is not affiliated with Razorpay.
+products:
+  payment_gateway:
+    name: Payment Gateway
+    one_line_value: Core online payment acceptance.
+    verified: false
+  subscriptions:
+    name: Subscriptions
+    one_line_value: Recurring billing on mandates.
+    verified: false
+  optimizer:
+    name: Optimizer
+    one_line_value: Routes each payment across multiple gateways to avoid a failing bank or method path.
+    verified: false
+  checkout_upi_intent:
+    name: Optimised Checkout (UPI Intent)
+    one_line_value: Opens the customer's UPI app directly instead of sending a collect request they may never approve.
+    verified: false
+  subscriptions_autopay_retries:
+    name: Subscriptions Smart Retries
+    one_line_value: Retries failed mandate debits at better times and fixes pre-debit notification gaps.
+    verified: false
+  config_review:
+    name: Configuration review
+    one_line_value: Merchant already has the fitting product; check that it is configured and enabled for this traffic.
+    verified: true
+
+# Detector -> product that addresses the leak.
+detector_product:
+  d1_bank_spike: optimizer
+  d2_upi_collect: checkout_upi_intent
+  d3_subscription_churn: subscriptions_autopay_retries
