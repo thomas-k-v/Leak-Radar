@@ -58,6 +58,11 @@ def _intent(text: str, focus: dict) -> tuple[str, dict]:
     return "help", {}
 
 
+def _lc(s: str) -> str:
+    """Lower-case only the first letter, keeping acronyms such as UPI."""
+    return s[:1].lower() + s[1:] if s[:3] != "UPI" else s
+
+
 def _focus_leak(args: dict, focus: dict) -> str | None:
     return args.get("leak_id") or focus.get("leak_id") or (focus.get("leak_ids") or [None])[0]
 
@@ -112,7 +117,7 @@ def _plan(intent: str, args: dict, ctx: Context) -> list[ToolCall] | str:
                     f"{top['merchant_name']} ({top['recoverable_inr_monthly_fmt']} a month). Worth a setup review.")
         return (f"Here are your top {out['count']} leaks, worth {out['total_recoverable_inr_monthly_fmt']} a month "
                 f"recoverable in total. The biggest is {top['merchant_name']} ({top['merchant_id']}): "
-                f"{top['headline'].lower()}, about {top['recoverable_inr_monthly_fmt']} a month recoverable. "
+                f"{_lc(top['headline'])}, about {top['recoverable_inr_monthly_fmt']} a month recoverable. "
                 f"Click a row to see the detail.")
 
     if intent == "merchant":
@@ -148,7 +153,7 @@ def _plan(intent: str, args: dict, ctx: Context) -> list[ToolCall] | str:
                    f"I'd suggest a setup review rather than a pitch.")
         else:
             rec = f"The fitting product is {d['recommended_product']['name']}: {d['recommended_product']['one_line_value']}"
-        return (f"{d['merchant_name']}: {d['headline'].lower()}. About {d['monthly_inr_at_risk_fmt']} a month is at "
+        return (f"{d['merchant_name']}: {_lc(d['headline'])}. About {d['monthly_inr_at_risk_fmt']} a month is at "
                 f"risk, of which {d['recoverable_inr_monthly_fmt']} looks recoverable. {rec} "
                 f"Want me to draft outreach or show the evidence?")
 
