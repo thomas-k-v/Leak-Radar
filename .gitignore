@@ -12,3 +12,4 @@ logs/
 *.egg-info/
 .claude/
 *.tsbuildinfo
+media/
